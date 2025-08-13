@@ -1,0 +1,43 @@
+name: Build VFD Price Report
+
+on:
+  workflow_dispatch: {}
+  push:
+    paths:
+      - 'data/**/*.csv'
+      - 'data/*.csv'
+      - 'tools/**/*.py'
+      - 'tools/*.py'
+  schedule:
+    # Every day at 09:00 Asia/Dhaka (UTC+6) => 03:00 UTC
+    - cron: '0 3 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || pip install pandas openpyxl
+
+      - name: Generate report (auto-detect CSVs in data/)
+        run: |
+          python tools/generate_report.py
+
+      - name: Commit report artifacts
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(report): update SISL_VFD_PA_2024 vs 2025_v01 (auto)"
+          file_pattern: "reports/*"
