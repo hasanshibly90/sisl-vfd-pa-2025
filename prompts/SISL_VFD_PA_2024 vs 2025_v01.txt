@@ -1,0 +1,61 @@
+Title: Build “SISL_VFD_PA_2024 vs 2025_v01” two-row VFD price report
+
+I will provide two CSVs: a 2024 list and a 2025 list.
+
+GOAL
+Create a “first report” comparing 2024 vs 2025 prices with EXACTLY two rows per model (2024 first, 2025 second), then export both CSV and Excel.
+
+INPUTS
+- 2024 CSV (source of truth for 2024 “Model” and “Price (BDT)”)
+- 2025 CSV (source of truth for 2025 “Model” and “Price (BDT)”)
+Columns present will include:
+  • Capacity (KW)  (e.g., 0.4K, 11K, 400K)
+  • Model (Rated Current)  (treat as “Model” text; keep verbatim)
+  • Price (BDT)   (keep formatting as-is; don’t reformat numbers)
+
+PAIRING RULES
+1) Each model group must have exactly 2 rows:
+   - Row 1: Year = 2024 (from the 2024 CSV)
+   - Row 2: Year = 2025 (from the 2025 CSV)
+2) If a model exists only in 2025, still create the group:
+   - Row 1 (2024): blank Model & Price
+   - Row 2 (2025): fill from 2025 source
+3) KEEP 2025 model names 100% verbatim from the 2025 CSV (no trimming, case changes, or normalization). Same for 2024 names from the 2024 CSV.
+
+ORDERING
+1) Capacity sort: strictly ascending by numeric capacity after stripping the trailing “K” (0.4 → 0.75 → … → 400).
+2) Within each capacity:
+   - Group order follows the 2024 list’s sequence (“first group = first 2024 model for that capacity; second group = second 2024 model”, etc.).
+   - After those, append any 2025-only models for that capacity.
+3) If a capacity appears only in 2025, include it after all 2024 capacities, sorted by capacity.
+
+OUTPUT COLUMNS (in this exact order)
+- Capacity (kW)        ← numeric value from “Capacity (KW)” (e.g., 0.4, 11, 400)
+- Year                 ← 2024 then 2025 per group
+- Model                ← verbatim from the respective source year
+- Price (BDT)          ← as text; keep thousands separators if present
+
+EXCEL FORMATTING
+- File name: SISL_VFD_PA_2024 vs 2025_v01.xlsx
+- Sheet name: First Report
+- Header: bold, light grey fill
+- Column widths: A=14, B=8, C=60, D=18; freeze panes at A2
+- Alignment: Year centered; Model left; Price (BDT) right; Capacity centered
+- Group banding: STRICT two-tone alternation by model group (every two rows)
+  • Group 1 = White
+  • Group 2 = Grey #B3B3B3 (darker, clearly visible)
+  • Group 3 = White
+  • Group 4 = Grey
+  (Do NOT override color due to missing prices; the alternation must never break.)
+
+DELIVERABLES
+1) CSV: SISL_VFD_PA_2024 vs 2025_v01.csv with the four columns above
+2) Excel: SISL_VFD_PA_2024 vs 2025_v01.xlsx with the formatting and banding above
+
+EDGE BEHAVIOR
+- Always emit both rows (2024 then 2025) for every group, even if one year’s price is missing.
+- Do not normalize or change model strings; preserve exactly as in each source year.
+- Keep Price (BDT) as text (don’t reformat currency).
+
+After generating, provide download links for both files.
+If the two CSVs aren’t attached yet, ask me to upload them.
